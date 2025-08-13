@@ -13,37 +13,30 @@ jobs:
     name: Build amd64 ISO
 
     steps:
-      - name: 📦 Checkout VigilOS config
+      - name: 📦 Checkout config
         uses: actions/checkout@v4
         with:
           repository: Vigil-OS/main
-          path: temp-config-source  # не в config!
+          path: temp-config
 
       - name: 🔧 Install live-build
         run: |
           apt-get update
-          apt-get install -y \
-            live-build \
-            debian-archive-keyring \
-            sudo \
-            qemu-user-static \
-            binfmt-support
+          apt-get install -y live-build debian-archive-keyring
 
-      - name: 📁 Setup live-build config
+      - name: 📁 Setup config
         run: |
-          # Копируем содержимое внутренней config/ наружу
-          cp -r temp-config-source/config/* .
-          ls -la bootstrap/  # проверка
+          cp -r temp-config/config/* .
+          ls -la bootstrap/chroot.yml
 
       - name: 🛠️ Build ISO
         run: |
-          lb clean && \
+          lb clean
           lb build
 
-      - name: 📦 Upload ISO
+      - name: 📦 Upload artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
           path: live-image-amd64.hybrid.iso
           name: vigilos-amd64.iso
-          retention-days: 7
