@@ -1,0 +1,16 @@
+---
+binary:
+  format: iso-hybrid
+  volume: VigilOS-i686
+  hybrid-mbr: true
+  uefi-grub: false
+  firmware: 32
+
+chroot:
+  architecture: i686
+  distribution: bookworm
+  components:
+    - main
+    - contrib
+  mirror: http://deb.debian.org/debian
+  security-mirror: http://security.debian.org/debian-security

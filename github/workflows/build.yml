@@ -1,0 +1,83 @@
+name: Build VigilOS (All Platforms)
+
+on:
+  push:
+    tags: [ 'v*' ]
+  workflow_dispatch:
+
+jobs:
+  build-amd64:
+    runs-on: ubuntu-latest
+    container: debian:bookworm-slim
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install
+        run: |
+          apt-get update
+          apt-get install -y git live-build debian-archive-keyring
+      - name: Build amd64
+        run: |
+          mv VigilOS/main/config config
+          lb config
+          lb clean && lb build
+      - uses: actions/upload-artifact@v3
+        with:
+          path: live-image-amd64.hybrid.iso
+          name: vigilos-amd64.iso
+
+  build-i686:
+    runs-on: ubuntu-latest
+    container: debian:bookworm-slim
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install
+        run: |
+          apt-get update
+          apt-get install -y git live-build debian-archive-keyring
+      - name: Build i686
+        run: |
+          mv VigilOS/main/config.i686 config
+          lb config
+          lb clean && lb build
+      - uses: actions/upload-artifact@v3
+        with:
+          path: live-image-i686.hybrid.iso
+          name: vigilos-i686.iso
+
+  build-arm64:
+    runs-on: ubuntu-latest
+    container: debian:bookworm-slim
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install
+        run: |
+          apt-get update
+          apt-get install -y git live-build debian-archive-keyring qemu-user-static
+      - name: Build arm64
+        run: |
+          mv VigilOS/main/config.arm64 config
+          lb config
+          lb clean && lb build
+      - uses: actions/upload-artifact@v3
+        with:
+          path: live-image-arm64.img
+          name: secureos-arm64.img
+
+  build-armhf:
+    runs-on: ubuntu-latest
+    container: debian:bookworm-slim
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install
+        run: |
+          apt-get update
+          apt-get install -y git live-build debian-archive-keyring qemu-user-static
+      - name: Build armhf
+        run: |
+          mv SecureOS/main/config.armhf config
+          lb config
+          lb clean && lb build
+      - uses: actions/upload-artifact@v3
+        with:
+          path: live-image-armhf.img
+          name: secureos-armhf.img

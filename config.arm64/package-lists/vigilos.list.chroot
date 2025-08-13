@@ -1,0 +1,6 @@
+# Для ARM
+u-boot-tools
+u-boot
+raspberrypi-sys-mods  # если для Pi
+firmware-linux-nonfree
+task-lxde-desktop

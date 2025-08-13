@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=VigilOS Hub
+Exec=vigilos-hub
+Icon=computer
+Type=Application
+Categories=System;

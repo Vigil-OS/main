@@ -1,0 +1,23 @@
+#!/bin/sh
+set -e
+
+# Включить Bluetooth
+systemctl enable bluetooth
+
+# Разблокировать Wi-Fi
+rfkill unblock wifi
+rfkill unblock bluetooth
+
+# Проверить, Pi ли это
+if [ -f /sys/firmware/devicetree/base/model ] && grep -q "Raspberry Pi" /sys/firmware/devicetree/base/model; then
+    echo "🔧 Это Raspberry Pi — применяю оптимизации..."
+
+    # Увеличить память GPU (если нужно)
+    echo "gpu_mem=256" >> /boot/config.txt
+
+    # Включить HDMI
+    echo "hdmi_force_hotplug=1" >> /boot/config.txt
+    echo "hdmi_drive=2" >> /boot/config.txt
+fi
+
+exit 0

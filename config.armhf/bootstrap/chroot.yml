@@ -1,0 +1,22 @@
+---
+binary:
+  format: img
+  volume: VigilOS-armhf
+  image-size: 4G
+
+chroot:
+  architecture: armhf
+  distribution: bookworm
+  components:
+    - main
+    - contrib
+  mirror: http://deb.debian.org/debian
+  kernel-package: linux-image-armmp
+  bootloader: u-boot
+
+  chroot:
+  components:
+    - main
+    - contrib
+    - non-free
+    - non-free-firmware

@@ -1,0 +1,24 @@
+# config/bootstrap/chroot.yml
+---
+binary:
+  format: iso-hybrid
+  volume: VigilOS
+  contents:
+    - live
+  contents-live:
+    - boot
+    - system
+  hybrid-mbr: true  # Для BIOS
+  uefi-secure-boot: false  # Пока false (shim нужен)
+  uefi-grub: true   # Включить GRUB для UEFI
+  firmware: 64      # Поддержка UEFI64
+
+chroot:
+  architecture: amd64
+  distribution: bookworm
+  components:
+    - main
+    - contrib
+  mirror: http://deb.debian.org/debian
+  security-mirror: http://security.debian.org/debian-security
+  uefi-secure-boot: true

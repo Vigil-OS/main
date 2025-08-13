@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=AnonSurf
+Comment=Включить/отключить анонимность
+Exec=xfce4-terminal -x sudo anonsurf start
+Icon=network-wired
+Terminal=true
+Type=Application
+Categories=Network;Security;

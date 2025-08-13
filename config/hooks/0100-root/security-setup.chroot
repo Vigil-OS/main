@@ -1,0 +1,30 @@
+#!/bin/sh
+set -e
+
+# Запрет root-логина
+passwd -l root
+
+# Настройка UFW
+ufw default deny incoming
+ufw default allow outgoing
+ufw enable
+
+# Отключить USB-автозагрузку (если нужно)
+echo 'KERNEL=="sd*", SUBSYSTEM=="block", ATTR{removable}=="1", ENV{UDISKS_MOUNT_OPTIONS_HIDE}="ro"' > /etc/udev/rules.d/99-no-usb-mount.rules
+
+# Добавить пользователя secure
+adduser --disabled-password --gecos "" secure
+adduser secure sudo
+
+# Твои скрипты из репозитория
+mkdir -p /home/secure/VigilOS
+cp -r /live/persistence/Trytonottry/VigilOS/main/* /home/secure/VigilOS/ 2>/dev/null || true
+chown -R secure:secure /home/secure/VigilOS
+
+# Автозапуск твоего скрипта при входе (пример)
+echo "/home/secure/SecureOS/startup.sh" >> /home/secure/.bashrc
+
+# Сделать исполняемым
+chmod +x /home/secure/SecureOS/startup.sh
+
+exit 0

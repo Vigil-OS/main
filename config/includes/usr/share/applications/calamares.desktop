@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Install SecureOS
+Comment=Install SecureOS to hard disk
+Exec=sudo calamares
+Icon=computer
+Terminal=false
+Type=Application
+Categories=System;Installer;

@@ -1,0 +1,16 @@
+---
+binary:
+  format: iso-hybrid
+  volume: VigilOS-i386
+  hybrid-mbr: true
+  uefi-grub: false    # UEFI64 не поддерживается на i386
+  firmware: 32        # Только BIOS
+
+chroot:
+  architecture: i386
+  distribution: bookworm
+  components:
+    - main
+    - contrib
+  mirror: http://deb.debian.org/debian
+  uefi-secure-boot: true

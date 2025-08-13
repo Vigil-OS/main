@@ -1,0 +1,1 @@
+coherent_pool=1M snd_bcm2835.enable_compat_alsa=1 snd_bcm2835.enable_hdmi=1 video=HDMI-A-1:1920x1080M@60 smsc95xx.turbo_mode=N dwc_otg.lpm_enable=0 console=tty1 rootwait quiet splash

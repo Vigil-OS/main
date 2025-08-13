@@ -1,0 +1,72 @@
+#!/bin/sh
+set -e
+
+# 👤 Пользователь
+adduser --disabled-password --gecos "Secure User" secure
+echo "secure:toor" | chpasswd
+adduser secure sudo
+
+# 🔐 Запрет root
+passwd -l root
+
+# 🌐 Tor
+systemctl enable tor
+
+# 🔒 UFW: deny incoming
+ufw default deny incoming
+ufw default allow outgoing
+ufw --force enable
+
+# 🧼 Амнезия
+cat > /etc/rc.local << 'EOF'
+#!/bin/sh
+find /home/secure -type f -name "*.log" -delete
+rm -rf /home/secure/.cache/* /tmp/* /var/tmp/*
+echo "🧹 Амнезия: временные файлы удалены"
+exit 0
+EOF
+chmod +x /etc/rc.local
+
+# 🛡️ AppArmor
+systemctl enable apparmor
+
+# 📁 Домашняя директория
+cp -r /live/persistence/Trytonottry/VigilOS/main/* /home/secure/VigilOS/ 2>/dev/null || true
+chown -R secure:secure /home/secure/VigilOS
+su - secure -c "echo '/home/secure/VigilOS/startup.sh' >> ~/.bashrc"
+
+# Отключить Bluetooth, печать, автозагрузку USB
+systemctl mask bluetooth.service
+systemctl mask cups.service
+systemctl mask ModemManager.service
+
+# Запретить автозапуск USB-устройств
+echo 'SUBSYSTEM=="usb", ENV{UDISKS_IGNORE}="1"' > /etc/udev/rules.d/99-no-usb-autorun.rules
+
+# Смена MAC-адреса
+macchanger -r wlan0 2>/dev/null || true
+macchanger -r eth0 2>/dev/null || true
+
+# Автозапуск при поднятии интерфейса
+cat > /etc/NetworkManager/dispatcher.d/01-mac-randomize << 'EOF'
+#!/bin/sh
+case "$2" in
+    up)
+        macchanger -r "$1" 2>/dev/null || true
+        ;;
+esac
+EOF
+chmod +x /etc/NetworkManager/dispatcher.d/01-mac-randomize
+
+# В хуке
+echo "exec startxfce4" > /home/secure/.xsession
+chown secure:secure /home/secure/.xsession
+
+# Включить Bluetooth
+systemctl enable bluetooth
+
+# Разблокировать Wi-Fi (если заблокирован)
+rfkill unblock wifi
+rfkill unblock bluetooth
+
+exit 0

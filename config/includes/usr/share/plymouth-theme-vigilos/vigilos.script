@@ -1,0 +1,56 @@
+// Plymouth-скрипт для VigilOS
+// Анимация: пульсирующий логотип с эффектом "пробуждения"
+
+screen_width = Window.GetWidth();
+screen_height = Window.GetHeight();
+
+// Загрузка изображений
+background = Image("background.png");
+logo = Image("logo.png");
+logo_glow = Image("logo-glow.png");
+
+// Масштабирование
+scaled_background = background.Scale(screen_width, screen_height);
+final_logo = logo.Scale(256, 256);
+final_logo_glow = logo_glow.Scale(300, 300);
+
+// Позиция
+x = (screen_width - 256) / 2;
+y = (screen_height - 256) / 2 - 50;
+
+// Фон
+background_sprite = Sprite();
+background_sprite.SetImage(scaled_background);
+background_sprite.SetZPosition(-100);
+
+// Логотип
+logo_sprite = Sprite();
+logo_sprite.SetImage(final_logo);
+logo_sprite.SetX(x);
+logo_sprite.SetY(y);
+
+// Свечение (будет пульсировать)
+glow_sprite = Sprite();
+glow_sprite.SetImage(final_logo_glow);
+glow_sprite.SetX(x - 22);
+glow_sprite.SetY(y - 22);
+glow_sprite.SetOpacity(0);
+
+// Анимация пульсации
+pulse_duration = 2000; // 2 сек
+start_time = GetTime();
+
+Sprite("logo").SetZPosition(10);
+Sprite("glow").SetZPosition(9);
+
+function loop() {
+    current_time = GetTime();
+    elapsed = (current_time - start_time) % pulse_duration;
+    opacity = 0.7 * (1 - Math.Sin(elapsed * 2 * Math.PI / pulse_duration));
+
+    glow_sprite.SetOpacity(opacity);
+}
+
+// Запуск анимации
+loop();
+Plymouth.SetBootAnimationFunction(loop);

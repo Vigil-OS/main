@@ -1,0 +1,22 @@
+---
+binary:
+  format: img
+  volume: VigilOS-arm64
+  image-size: 4G
+
+chroot:
+  architecture: arm64
+  distribution: bookworm
+  components:
+    - main
+    - contrib
+  mirror: http://deb.debian.org/debian
+  kernel-package: linux-image-arm64
+  bootloader: u-boot
+
+  chroot:
+  components:
+    - main
+    - contrib
+    - non-free
+    - non-free-firmware

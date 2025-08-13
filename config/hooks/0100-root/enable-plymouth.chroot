@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+# Установить тему по умолчанию
+plymouth-set-default-theme vigilos
+
+# Обновить initramfs
+update-initramfs -u
+
+exit 0

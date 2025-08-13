@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=VigilOS
+Description=A secure, anonymous, and powerful OS for privacy and penetration testing
+ModuleName=script
+
+[script]
+ImageDir=images
+ScriptFile=vigilos.script

@@ -1,0 +1,6 @@
+#!/bin/bash
+if systemctl is-active --quiet tor; then
+    notify-send "🟢 Tor активен" "Сеть анонимизирована" -i network-wireless --expire-time=5000
+else
+    notify-send "🔴 Tor не запущен" "Используйте AnonSurf" -i dialog-warning --expire-time=5000
+fi

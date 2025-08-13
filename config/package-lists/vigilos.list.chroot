@@ -1,0 +1,110 @@
+# 🔧 Основа Live-системы
+live-boot
+live-config
+live-task
+
+# 🖥️ Графическая среда (легковесная)
+task-xfce-desktop
+xfce4
+xfce4-goodies
+lightdm
+galculator
+
+# 🛡️ Приватность и анонимность (как в Tails)
+tor
+torbrowser-launcher
+torsocks
+i2p
+anonsurf  # если добавишь из Parrot
+network-manager-openvpn-gnome
+dnscrypt-proxy
+firejail
+
+# Установщик
+calamares
+calamares-settings-debian
+
+# 🔒 Безопасность
+apparmor-utils
+ufw
+rkhunter
+lynis
+fail2ban
+gufw
+veracrypt
+seahorse
+kleopatra
+
+# 🛠️ Инструменты (как в Kali/Parrot)
+nmap
+wireshark
+metasploit-framework
+sqlmap
+john
+hashcat
+hydra
+burpsuite
+netcat-traditional
+tcpdump
+arp-scan
+macchanger
+enum4linux
+theharvester
+sublist3r
+gobuster
+dirb
+nikto
+exploitdb
+binwalk
+foremost
+steghide
+volatility
+yara
+radare2
+apktool
+adb
+firejail
+firejail-firefox
+auditd
+lynis
+rkhunter
+arc-theme
+moka-icon-theme
+plymouth
+plymouth-themes
+
+# Для UEFI
+grub-efi-amd64
+grub-efi-amd64-bin
+grub-efi-amd64-signed
+shim-signed
+efibootmgr
+dosfstools
+mtools
+
+# Wi-Fi и Bluetooth
+firmware-brcm80211
+firmware-atheros
+firmware-realtek
+bluez
+bluez-firmware
+blueman
+wpasupplicant
+rfkill
+
+# Утилиты
+network-manager
+network-manager-gnome
+nm-tray
+
+# Для Raspberry Pi
+raspberrypi-kernel-headers
+raspberrypi-bootloader
+libraspberrypi-bin
+libraspberrypi0
+
+# Ускорение
+mesa-utils
+mesa-vulkan-drivers
+libgl1-mesa-dri
+xserver-xorg-video-fbdev
