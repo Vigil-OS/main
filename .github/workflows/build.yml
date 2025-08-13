@@ -30,23 +30,29 @@ jobs:
       - name: Клонировать репозиторий
         uses: actions/checkout@v4
 
-      - name: Инициализировать и восстановить config
+      - name: Подготовить config с помощью lb config
         run: |
-          # Создаём базовую структуру с метками
-          sudo lb config
+          # 1. Переименуем твой config в config-custom
+          mv config config-custom
 
-          # Удаляем сгенерированные файлы, чтобы вставить свои
-          sudo rm -rf \
-            config/bootstrap \
-            config/package-lists \
-            config/hooks \
-            config/includes \
-            config/archives \
-            config/bootloaders \
-            config/binary_rootfs-persistence.conf
+          # 2. Запускаем lb config — создаст валидную структуру
+          lb config
 
-          # Теперь твои файлы из репозитория (уже в корне) будут использованы
-          # live-build прочитает их при сборке
+          # 3. Удаляем сгенерированные файлы (оставим только структуру)
+          rm -rf config/bootstrap config/package-lists config/hooks config/includes config/archives config/bootloaders config/binary_rootfs-persistence.conf
+
+          # 4. Копируем твои настройки обратно
+          mv config-custom/bootstrap config/
+          mv config-custom/package-lists config/
+          mv config-custom/hooks config/
+          mv config-custom/includes config/
+          mv config-custom/archives config/
+          mv config-custom/bootloaders config/
+          mv config-custom/binary_rootfs-persistence.conf config/ 2>/dev/null || true
+
+          # 5. Проверим, что всё на месте
+          ls -la config/
+          ls -la config/bootstrap/
 
       - name: Сборка ISO
         run: |
