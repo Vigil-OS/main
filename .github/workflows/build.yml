@@ -30,15 +30,15 @@ jobs:
       - name: Клонировать репозиторий
         uses: actions/checkout@v4
 
-      - name: Переименовать config и инициализировать live-build
+      - name: Полная инициализация через lb config
         run: |
-          # 1. Переименуем существующий config в .config-tmp
+          # 1. Переименовываем существующий config, чтобы lb config мог запуститься
           mv config .config-tmp
 
-          # 2. Запускаем lb config — создаст пустую валидную структуру
+          # 2. Запускаем lb config — это ключевой шаг для прохождения валидации
           lb config
 
-          # 3. Удаляем сгенерированные файлы, чтобы вставить наши
+          # 3. Удаляем все сгенерированные файлы, чтобы вставить наши
           rm -rf config/bootstrap \
                  config/package-lists \
                  config/hooks \
@@ -47,7 +47,7 @@ jobs:
                  config/bootloaders \
                  config/binary_rootfs-persistence.conf 2>/dev/null || true
 
-          # 4. Восстанавливаем твои настройки
+          # 4. Восстанавливаем твои кастомные файлы
           mv .config-tmp/bootstrap config/
           mv .config-tmp/package-lists config/
           mv .config-tmp/hooks config/
@@ -56,7 +56,7 @@ jobs:
           mv .config-tmp/bootloaders config/
           mv .config-tmp/binary_rootfs-persistence.conf config/ 2>/dev/null || true
 
-          # 5. Проверка
+          # 5. Проверка структуры
           echo "Конфигурация готова:"
           find config -type f | grep -v '/\.' | sort
 
