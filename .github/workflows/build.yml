@@ -36,7 +36,7 @@ jobs:
           mkdir -p config/.disk
           mkdir -p auto
 
-          # 2. Создаём минимальные auto-файлы (обязательно!)
+          # 2. Создаём минимальные auto-файлы
           echo "binary" > auto/file
           echo "lb config" > auto/config
           echo "exit 0" > auto/hooks
@@ -48,7 +48,7 @@ jobs:
           # 4. Убедимся, что bootstrap существует
           mkdir -p config/bootstrap
 
-          # 5. Если нет chroot.yml — создаём минимальный (на всякий случай)
+          # 5. Если нет chroot.yml — создаём минимальный
           if [ ! -f config/bootstrap/chroot.yml ]; then
             cat > config/bootstrap/chroot.yml << 'EOF'
 ---
@@ -69,22 +69,24 @@ EOF
           echo "auto/ files:"
           cat auto/file
           cat auto/config
+          cat auto/hooks
+          cat auto/clean
 
-          - name: Сборка ISO
-    run: |
-      sudo lb clean
-      sudo lb build
+      - name: Сборка ISO
+        run: |
+          sudo lb clean
+          sudo lb build
 
-  - name: Выложить ISO как артефакт
-    uses: actions/upload-artifact@v4
-    with:
-      path: live-image-amd64.hybrid.iso
-      name: vigilos-amd64.iso
-      if: success
+      - name: Выложить ISO как артефакт
+        uses: actions/upload-artifact@v4
+        with:
+          path: live-image-amd64.hybrid.iso
+          name: vigilos-amd64.iso
+          if: success
 
-  - name: Опубликовать релиз
-    if: github.event_name == 'release'
-    uses: softprops/action-gh-release@v2
-    with:
-      files: live-image-amd64.hybrid.iso
-      generate_release_notes: true
+      - name: Опубликовать релиз
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: live-image-amd64.hybrid.iso
+          generate_release_notes: true
