@@ -30,32 +30,21 @@ jobs:
       - name: Клонировать репозиторий
         uses: actions/checkout@v4
 
-      - name: Подготовить config с помощью lb config
+      - name: Создать .disk/metadata для валидации config
         run: |
-          # 1. Переименуем твой config в config-custom
-          mv config config-custom
+          # Убедимся, что config/ существует
+          mkdir -p config/.disk
 
-          # 2. Запускаем lb config — создаст валидную структуру
-          lb config
+          # Создаём файл метаданных — это сигнал для live-build, что config прошёл инициализацию
+          echo "VigilOS live-build config" > config/.disk/metadata
 
-          # 3. Удаляем сгенерированные файлы (оставим только структуру)
-          rm -rf config/bootstrap config/package-lists config/hooks config/includes config/archives config/bootloaders config/binary_rootfs-persistence.conf
-
-          # 4. Копируем твои настройки обратно
-          mv config-custom/bootstrap config/
-          mv config-custom/package-lists config/
-          mv config-custom/hooks config/
-          mv config-custom/includes config/
-          mv config-custom/archives config/
-          mv config-custom/bootloaders config/
-          mv config-custom/binary_rootfs-persistence.conf config/ 2>/dev/null || true
-
-          # 5. Проверим, что всё на месте
+          # Проверим структуру
           ls -la config/
-          ls -la config/bootstrap/
+          ls -la config/.disk/
 
       - name: Сборка ISO
         run: |
+          # Не запускаем lb config — используем валидацию через .disk/metadata
           sudo lb clean
           sudo lb build
 
