@@ -30,16 +30,26 @@ jobs:
       - name: Клонировать репозиторий
         uses: actions/checkout@v4
 
-      - name: Проверить структуру
+      - name: Инициализировать и восстановить config
         run: |
-          echo "Содержимое:"
-          ls -la
-          echo "config/:"
-          ls -la config/
+          # Создаём базовую структуру с метками
+          sudo lb config
+
+          # Удаляем сгенерированные файлы, чтобы вставить свои
+          sudo rm -rf \
+            config/bootstrap \
+            config/package-lists \
+            config/hooks \
+            config/includes \
+            config/archives \
+            config/bootloaders \
+            config/binary_rootfs-persistence.conf
+
+          # Теперь твои файлы из репозитория (уже в корне) будут использованы
+          # live-build прочитает их при сборке
 
       - name: Сборка ISO
         run: |
-          # Не запускаем lb config — конфиг уже есть
           sudo lb clean
           sudo lb build
 
