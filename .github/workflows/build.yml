@@ -29,6 +29,13 @@ jobs:
             qemu-user-static \
             binfmt-support
 
+      - name: 🛠️ Initialize config (required!)
+        run: |
+          # Это ключевой шаг: lb config должен быть запущен,
+          # даже если config/ уже существует
+          cd config && \
+          lb config
+
       - name: 🛠️ Build ISO
         run: |
           cd config && \
@@ -37,44 +44,8 @@ jobs:
 
       - name: 📦 Upload ISO
         if: success()
-        uses: actions/upload-artifact@v4  # ✅ Исправлено: v4 вместо v2
+        uses: actions/upload-artifact@v4
         with:
           path: live-image-amd64.hybrid.iso
           name: vigilos-amd64.iso
-          retention-days: 7
-
-  build-arm64:
-    runs-on: ubuntu-latest
-    container: debian:bookworm-slim
-    name: Build arm64 IMG
-
-    steps:
-      - name: 📦 Checkout VigilOS config
-        uses: actions/checkout@v4
-        with:
-          repository: Vigil-OS/main
-          path: config
-
-      - name: 🔧 Install live-build
-        run: |
-          apt-get update
-          apt-get install -y \
-            live-build \
-            debian-archive-keyring \
-            sudo \
-            qemu-user-static \
-            binfmt-support
-
-      - name: 🛠️ Build IMG
-        run: |
-          cd config && \
-          lb clean && \
-          lb build
-
-      - name: 📦 Upload IMG
-        if: success()
-        uses: actions/upload-artifact@v4  # ✅ Исправлено: v4 вместо v2
-        with:
-          path: live-image-arm64.img
-          name: vigilos-arm64.img
           retention-days: 7
