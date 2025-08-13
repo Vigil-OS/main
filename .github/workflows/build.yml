@@ -29,13 +29,13 @@ jobs:
 
       - name: Клонировать репозиторий и выполнить lb config
         run: |
-          # 1. Создаём временную папку для твоих файлов
-          git clone https://github.com/Trytonottry/SecureOS.git /tmp/vigilos-custom
+          # 1. Клонируем правильный репозиторий
+          git clone https://github.com/Vigil-OS/main.git /tmp/vigilos-custom
 
           # 2. Инициализируем live-build config
           lb config
 
-          # 3. Удаляем сгенерированные файлы, которые будут заменены
+          # 3. Удаляем сгенерированные файлы, чтобы вставить наши
           rm -rf config/bootstrap \
                  config/package-lists \
                  config/hooks \
@@ -44,16 +44,16 @@ jobs:
                  config/bootloaders \
                  config/binary_rootfs-persistence.conf 2>/dev/null || true
 
-          # 4. Копируем твои настройки поверх
-          cp -r /tmp/vigilos-custom/main/bootstrap config/
-          cp -r /tmp/vigilos-custom/main/package-lists config/
-          cp -r /tmp/vigilos-custom/main/hooks config/
-          cp -r /tmp/vigilos-custom/main/includes config/
-          cp -r /tmp/vigilos-custom/main/archives config/
-          cp -r /tmp/vigilos-custom/main/bootloaders config/
-          cp -r /tmp/vigilos-custom/main/binary_rootfs-persistence.conf config/ 2>/dev/null || true
+          # 4. Копируем твои настройки из корня репозитория
+          cp -r /tmp/vigilos-custom/config/bootstrap config/
+          cp -r /tmp/vigilos-custom/config/package-lists config/
+          cp -r /tmp/vigilos-custom/config/hooks config/
+          cp -r /tmp/vigilos-custom/config/includes config/
+          cp -r /tmp/vigilos-custom/config/archives config/
+          cp -r /tmp/vigilos-custom/config/bootloaders config/
+          cp -r /tmp/vigilos-custom/config/binary_rootfs-persistence.conf config/ 2>/dev/null || true
 
-          # 5. Проверка
+          # 5. Проверка структуры
           echo "Конфигурация готова:"
           find config -type f | grep -v '/\.' | sort
 
