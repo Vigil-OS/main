@@ -4,10 +4,10 @@
 > Вдохновлён Kali Linux, Tails и Parrot OS.  
 > Идеален для пентеста, цифровой гигиены и анонимной работы.
 
-[![Release](https://img.shields.io/github/v/release/Vigil-OS/main?include_prereleases&label=Version&color=blue)](https://github.com/Vigil-OS/main/releases)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/Vigil-OS/main/build.yml?branch=main&label=Build)](https://github.com/Vigil-OS/main/actions)
-[![License](https://img.shields.io/github/license/Vigil-OS/main)](LICENSE)
-[![GitHub Stars](https://img.shields.io/github/stars/Vigil-OS/main?style=social)](https://github.com/Vigil-OS/main)
+[![Release](https://img.shields.io/github/v/release/Trytonottry/SecureOS?include_prereleases&label=Version&color=blue)](https://github.com/Vigil-OS/base/releases)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/Trytonottry/SecureOS/build.yml?branch=main&label=Build)](https://github.com/Vigil-OS/base/actions)
+[![License](https://img.shields.io/github/license/Trytonottry/SecureOS)](LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/Trytonottry/SecureOS?style=social)](https://github.com/Vigil-OS/base)
 [![Website](https://img.shields.io/badge/🌐-Website-green)](https://vigil-os.github.io/)
 
 ---
@@ -38,7 +38,7 @@
 
 ## 📥 Скачать
 
-➡️ [Последняя версия (v0.2)](https://github.com/Vigil-OS/main/releases/tag/os)
+➡️ [Последняя версия (v0.2)](https://github.com/Vigil-OS/base/releases/tag/v0.2)
 
 ---
 
