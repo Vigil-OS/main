@@ -27,18 +27,19 @@ jobs:
             xorriso \
             sudo
 
-      - name: Клонировать репозиторий
-        uses: actions/checkout@v4
-
-      - name: Полная инициализация через lb config
+      - name: Сборка в чистой директории
         run: |
-          # 1. Переименовываем существующий config, чтобы lb config мог запуститься
-          mv config .config-tmp
+          # 1. Создаём чистую директорию
+          mkdir -p /tmp/vigilos-build
+          cd /tmp/vigilos-build
 
-          # 2. Запускаем lb config — это ключевой шаг для прохождения валидации
+          # 2. Клонируем твой репозиторий с настройками
+          git clone https://github.com/Vigil-OS/main.git /tmp/vigilos-custom
+
+          # 3. Инициализируем live-build config (самое главное — сначала!)
           lb config
 
-          # 3. Удаляем все сгенерированные файлы, чтобы вставить наши
+          # 4. Удаляем сгенерированные файлы
           rm -rf config/bootstrap \
                  config/package-lists \
                  config/hooks \
@@ -47,23 +48,25 @@ jobs:
                  config/bootloaders \
                  config/binary_rootfs-persistence.conf 2>/dev/null || true
 
-          # 4. Восстанавливаем твои кастомные файлы
-          mv .config-tmp/bootstrap config/
-          mv .config-tmp/package-lists config/
-          mv .config-tmp/hooks config/
-          mv .config-tmp/includes config/
-          mv .config-tmp/archives config/
-          mv .config-tmp/bootloaders config/
-          mv .config-tmp/binary_rootfs-persistence.conf config/ 2>/dev/null || true
+          # 5. Копируем твои настройки
+          cp -r /tmp/vigilos-custom/config/bootstrap config/
+          cp -r /tmp/vigilos-custom/config/package-lists config/
+          cp -r /tmp/vigilos-custom/config/hooks config/
+          cp -r /tmp/vigilos-custom/config/includes config/
+          cp -r /tmp/vigilos-custom/config/archives config/
+          cp -r /tmp/vigilos-custom/config/bootloaders config/
+          cp -r /tmp/vigilos-custom/config/binary_rootfs-persistence.conf config/ 2>/dev/null || true
 
-          # 5. Проверка структуры
+          # 6. Проверка
           echo "Конфигурация готова:"
           find config -type f | grep -v '/\.' | sort
 
-      - name: Сборка ISO
-        run: |
+          # 7. Сборка
           sudo lb clean
           sudo lb build
+
+          # 8. Перемещаем результат в корень для артефакта
+          cp live-image-amd64.hybrid.iso /github/workspace/
 
       - name: Выложить ISO как артефакт
         uses: actions/upload-artifact@v4
