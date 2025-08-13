@@ -51,7 +51,7 @@ jobs:
 
       - name: Опубликовать релиз (если это релиз)
         if: github.event_name == 'release'
-        uses: softprops/action-gh-release@v4
+        uses: softprops/action-gh-release@v2
         with:
           files: config/live-image-amd64.hybrid.iso
           generate_release_notes: true
