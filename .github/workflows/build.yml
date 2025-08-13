@@ -1,83 +1,71 @@
-name: Build VigilOS ISO
+name: Build VigilOS
 
 on:
   push:
-    branches: [ main ]
+    tags: [ 'v*' ]
   workflow_dispatch:
-  release:
-    types: [published]
 
 jobs:
-  build:
+  build-amd64:
     runs-on: ubuntu-latest
     container: debian:bookworm-slim
+    name: Build amd64 (UEFI/BIOS)
 
     steps:
-      - name: Установка зависимостей
+      - name: Checkout VigilOS config
+        uses: actions/checkout@v4
+        with:
+          repository: Vigil-OS/main
+          path: config
+
+      - name: Install live-build
         run: |
           apt-get update
-          apt-get install -y \
-            git \
-            live-build \
-            debian-archive-keyring \
-            syslinux-efi \
-            grub-efi-amd64 \
-            dosfstools \
-            mtools \
-            xorriso \
-            sudo
+          apt-get install -y live-build debian-archive-keyring qemu-user-static
 
-      - name: Сборка в чистой директории
+      - name: Build ISO
         run: |
-          # 1. Создаём чистую директорию
-          mkdir -p /tmp/vigilos-build
-          cd /tmp/vigilos-build
+          lb clean
+          lb build
 
-          # 2. Клонируем твой репозиторий с настройками
-          git clone https://github.com/Vigil-OS/main.git /tmp/vigilos-custom
-
-          # 3. Инициализируем live-build config (самое главное — сначала!)
-          lb config
-
-          # 4. Удаляем сгенерированные файлы
-          rm -rf config/bootstrap \
-                 config/package-lists \
-                 config/hooks \
-                 config/includes \
-                 config/archives \
-                 config/bootloaders \
-                 config/binary_rootfs-persistence.conf 2>/dev/null || true
-
-          # 5. Копируем твои настройки
-          cp -r /tmp/vigilos-custom/config/bootstrap config/
-          cp -r /tmp/vigilos-custom/config/package-lists config/
-          cp -r /tmp/vigilos-custom/config/hooks config/
-          cp -r /tmp/vigilos-custom/config/includes config/
-          cp -r /tmp/vigilos-custom/config/archives config/
-          cp -r /tmp/vigilos-custom/config/bootloaders config/
-          cp -r /tmp/vigilos-custom/config/binary_rootfs-persistence.conf config/ 2>/dev/null || true
-
-          # 6. Проверка
-          echo "Конфигурация готова:"
-          find config -type f | grep -v '/\.' | sort
-
-          # 7. Сборка
-          sudo lb clean
-          sudo lb build
-
-          # 8. Перемещаем результат в корень для артефакта
-          cp live-image-amd64.hybrid.iso /github/workspace/
-
-      - name: Выложить ISO как артефакт
-        uses: actions/upload-artifact@v4
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
         with:
           path: live-image-amd64.hybrid.iso
           name: vigilos-amd64.iso
-          if: success
 
-      - name: Опубликовать релиз
-        if: github.event_name == 'release'
-        uses: softprops/action-gh-release@v2
+  build-arm64:
+    runs-on: ubuntu-latest
+    container: debian:bookworm-slim
+    name: Build arm64 (Raspberry Pi 4/5)
+
+    steps:
+      - name: Checkout config
+        uses: actions/checkout@v4
         with:
-          files: live-image-amd64.hybrid.iso
-          generate_release_notes: true
+          repository: Vigil-OS/main
+          path: config
+
+      - name: Install deps
+        run: |
+          apt-get update
+          apt-get install -y live-build debian-archive-keyring qemu-user-static
+
+      - name: Switch to arm64 config
+        run: |
+          # Если у тебя config.arm64/ в репозитории
+          cp -r config config.arm64-temp
+          rm -rf config
+          mv config.arm64-temp config
+          # Здесь можно заменить chroot.yml на arm64-версию при необходимости
+
+      - name: Build IMG
+        run: |
+          lb clean
+          lb build
+
+      - name: Upload IMG
+        uses: actions/upload-artifact@v3
+        with:
+          path: live-image-arm64.img
+          name: vigilos-arm64.img
