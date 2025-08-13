@@ -38,7 +38,7 @@
 
 ## 📥 Скачать
 
-➡️ [Последняя версия (v0.2)](https://github.com/Vigil-OS/base/releases/tag/v0.2)
+➡️ [Последняя версия (v0.2)](https://github.com/Vigil-OS/main/releases/tag/os)
 
 ---
 
