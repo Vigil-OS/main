@@ -1,0 +1,57 @@
+name: Build VigilOS ISO
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # Чтобы можно было запускать вручную
+  release:
+    types: [published]  # Собирать при релизе
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: debian:bookworm-slim  # Используем чистый Debian
+
+    steps:
+      - name: Установка зависимостей
+        run: |
+          apt-get update
+          apt-get install -y \
+            git \
+            live-build \
+            debian-archive-keyring \
+            syslinux-efi \
+            grub-efi-amd64 \
+            grub-pc \
+            dosfstools \
+            mtools \
+            xorriso \
+            sudo
+
+      - name: Клонировать репозиторий
+        uses: actions/checkout@v4
+
+      - name: Переименовать main → config
+        run: |
+          mv VigilOS/main config
+          cd config && lb config
+
+      - name: Сборка ISO
+        run: |
+          cd config
+          sudo lb clean
+          sudo lb build
+
+      - name: Выложить ISO как артефакт
+        uses: actions/upload-artifact@v3
+        with:
+          path: config/live-image-amd64.hybrid.iso
+          name: vigilos-amd64.iso
+          if: success
+
+      - name: Опубликовать релиз (если это релиз)
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: config/live-image-amd64.hybrid.iso
+          generate_release_notes: true
