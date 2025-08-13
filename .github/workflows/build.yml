@@ -30,50 +30,29 @@ jobs:
       - name: Клонировать репозиторий
         uses: actions/checkout@v4
 
-      - name: Подготовить config с auto/ и .disk/metadata
+      - name: Полная инициализация config через lb config
         run: |
-          # 1. Создаём служебные директории
-          mkdir -p config/.disk
-          mkdir -p auto
+          # 1. Переименуем твой config в config-tmp
+          mv config config-tmp
 
-          # 2. Создаём минимальные auto-файлы
-          echo "binary" > auto/file
-          echo "lb config" > auto/config
-          echo "exit 0" > auto/hooks
-          echo "exit 0" > auto/clean
+          # 2. Запускаем lb config — создаст валидную структуру
+          lb config
 
-          # 3. Создаём метаданные
-          echo "VigilOS live-build config" > config/.disk/metadata
+          # 3. Удаляем все сгенерированные файлы, чтобы вставить свои
+          rm -rf config/bootstrap config/package-lists config/hooks config/includes config/archives config/bootloaders config/binary_rootfs-persistence.conf
 
-          # 4. Убедимся, что bootstrap существует
-          mkdir -p config/bootstrap
+          # 4. Копируем твои настройки обратно
+          mv config-tmp/bootstrap config/
+          mv config-tmp/package-lists config/
+          mv config-tmp/hooks config/
+          mv config-tmp/includes config/
+          mv config-tmp/archives config/
+          mv config-tmp/bootloaders config/
+          mv config-tmp/binary_rootfs-persistence.conf config/ 2>/dev/null || true
 
-          # 5. Если нет chroot.yml — создаём минимальный (без использования EOF)
-          if [ ! -f config/bootstrap/chroot.yml ]; then
-            echo "---" > config/bootstrap/chroot.yml
-            echo "chroot:" >> config/bootstrap/chroot.yml
-            echo "  distribution: bookworm" >> config/bootstrap/chroot.yml
-            echo "  architecture: amd64" >> config/bootstrap/chroot.yml
-            echo "  components:" >> config/bootstrap/chroot.yml
-            echo "    - main" >> config/bootstrap/chroot.yml
-            echo "    - contrib" >> config/bootstrap/chroot.yml
-            echo "    - non-free" >> config/bootstrap/chroot.yml
-            echo "    - non-free-firmware" >> config/bootstrap/chroot.yml
-          fi
-
-          # 6. Проверка структуры
+          # 5. Проверим результат
           echo "Структура config:"
           find config -type f | grep -v '/\.' | sort
-          echo "auto/ files:"
-          cat auto/file
-          echo "auto/config content:"
-          cat auto/config
-          echo "auto/hooks content:"
-          cat auto/hooks
-          echo "auto/clean content:"
-          cat auto/clean
-          echo "config/bootstrap/chroot.yml:"
-          cat config/bootstrap/chroot.yml
 
       - name: Сборка ISO
         run: |
