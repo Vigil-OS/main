@@ -2,6 +2,7 @@ name: Build VigilOS
 
 on:
   push:
+    branches: [ main ]
     tags: [ 'v*' ]
   workflow_dispatch:
 
@@ -9,63 +10,71 @@ jobs:
   build-amd64:
     runs-on: ubuntu-latest
     container: debian:bookworm-slim
-    name: Build amd64 (UEFI/BIOS)
+    name: Build amd64 ISO
 
     steps:
-      - name: Checkout VigilOS config
+      - name: 📦 Checkout VigilOS config
         uses: actions/checkout@v4
         with:
           repository: Vigil-OS/main
           path: config
 
-      - name: Install live-build
+      - name: 🔧 Install live-build
         run: |
           apt-get update
-          apt-get install -y live-build debian-archive-keyring qemu-user-static
+          apt-get install -y \
+            live-build \
+            debian-archive-keyring \
+            sudo \
+            qemu-user-static \
+            binfmt-support
 
-      - name: Build ISO
+      - name: 🛠️ Build ISO
         run: |
-          lb clean
+          cd config && \
+          lb clean && \
           lb build
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: 📦 Upload ISO
+        if: success()
+        uses: actions/upload-artifact@v4  # ✅ Исправлено: v4 вместо v2
         with:
           path: live-image-amd64.hybrid.iso
           name: vigilos-amd64.iso
+          retention-days: 7
 
   build-arm64:
     runs-on: ubuntu-latest
     container: debian:bookworm-slim
-    name: Build arm64 (Raspberry Pi 4/5)
+    name: Build arm64 IMG
 
     steps:
-      - name: Checkout config
+      - name: 📦 Checkout VigilOS config
         uses: actions/checkout@v4
         with:
           repository: Vigil-OS/main
           path: config
 
-      - name: Install deps
+      - name: 🔧 Install live-build
         run: |
           apt-get update
-          apt-get install -y live-build debian-archive-keyring qemu-user-static
+          apt-get install -y \
+            live-build \
+            debian-archive-keyring \
+            sudo \
+            qemu-user-static \
+            binfmt-support
 
-      - name: Switch to arm64 config
+      - name: 🛠️ Build IMG
         run: |
-          # Если у тебя config.arm64/ в репозитории
-          cp -r config config.arm64-temp
-          rm -rf config
-          mv config.arm64-temp config
-          # Здесь можно заменить chroot.yml на arm64-версию при необходимости
-
-      - name: Build IMG
-        run: |
-          lb clean
+          cd config && \
+          lb clean && \
           lb build
 
-      - name: Upload IMG
-        uses: actions/upload-artifact@v2
+      - name: 📦 Upload IMG
+        if: success()
+        uses: actions/upload-artifact@v4  # ✅ Исправлено: v4 вместо v2
         with:
           path: live-image-arm64.img
           name: vigilos-arm64.img
+          retention-days: 7
