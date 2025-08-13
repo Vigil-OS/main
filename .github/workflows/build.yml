@@ -29,7 +29,7 @@ jobs:
           lb build
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           path: live-image-amd64.hybrid.iso
           name: vigilos-amd64.iso
@@ -65,7 +65,7 @@ jobs:
           lb build
 
       - name: Upload IMG
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           path: live-image-arm64.img
           name: vigilos-arm64.img
