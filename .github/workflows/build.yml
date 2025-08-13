@@ -9,8 +9,13 @@ on:
 jobs:
   build-amd64:
     runs-on: ubuntu-latest
-    container: debian:bookworm-slim
+    container: debian:bookworm
     name: Build amd64 ISO
+
+    # Добавляем права для работы с устройствами
+    security_opt:
+      - apparmor:unconfined
+      - seccomp:unconfined
 
     steps:
       - name: 📦 Checkout config
@@ -19,15 +24,24 @@ jobs:
           repository: Vigil-OS/main
           path: temp-config
 
-      - name: 🔧 Install live-build
+      - name: 🔧 Install live-build and deps
         run: |
           apt-get update
-          apt-get install -y live-build debian-archive-keyring
+          apt-get install -y \
+            live-build \
+            debian-archive-keyring \
+            sudo \
+            fakeroot \
+            fakechroot \
+            proot \
+            qemu-user-static \
+            binfmt-support \
+            systemd-container
 
       - name: 📁 Setup config
         run: |
           cp -r temp-config/config/* .
-          ls -la bootstrap/chroot.yml
+          cat bootstrap/chroot.yml  # проверка
 
       - name: 🛠️ Build ISO
         run: |
@@ -40,3 +54,4 @@ jobs:
         with:
           path: live-image-amd64.hybrid.iso
           name: vigilos-amd64.iso
+          retention-days: 7
