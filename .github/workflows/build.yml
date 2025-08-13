@@ -48,19 +48,17 @@ jobs:
           # 4. Убедимся, что bootstrap существует
           mkdir -p config/bootstrap
 
-          # 5. Если нет chroot.yml — создаём минимальный
+          # 5. Если нет chroot.yml — создаём минимальный (без использования EOF)
           if [ ! -f config/bootstrap/chroot.yml ]; then
-            cat > config/bootstrap/chroot.yml << 'EOF'
----
-chroot:
-  distribution: bookworm
-  architecture: amd64
-  components:
-    - main
-    - contrib
-    - non-free
-    - non-free-firmware
-EOF
+            echo "---" > config/bootstrap/chroot.yml
+            echo "chroot:" >> config/bootstrap/chroot.yml
+            echo "  distribution: bookworm" >> config/bootstrap/chroot.yml
+            echo "  architecture: amd64" >> config/bootstrap/chroot.yml
+            echo "  components:" >> config/bootstrap/chroot.yml
+            echo "    - main" >> config/bootstrap/chroot.yml
+            echo "    - contrib" >> config/bootstrap/chroot.yml
+            echo "    - non-free" >> config/bootstrap/chroot.yml
+            echo "    - non-free-firmware" >> config/bootstrap/chroot.yml
           fi
 
           # 6. Проверка структуры
@@ -68,9 +66,14 @@ EOF
           find config -type f | grep -v '/\.' | sort
           echo "auto/ files:"
           cat auto/file
+          echo "auto/config content:"
           cat auto/config
+          echo "auto/hooks content:"
           cat auto/hooks
+          echo "auto/clean content:"
           cat auto/clean
+          echo "config/bootstrap/chroot.yml:"
+          cat config/bootstrap/chroot.yml
 
       - name: Сборка ISO
         run: |
