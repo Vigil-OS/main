@@ -29,12 +29,11 @@ jobs:
             qemu-user-static \
             binfmt-support
 
-      - name: 🛠️ Initialize config (required!)
+      - name: 🧪 Validate config structure
         run: |
-          # Это ключевой шаг: lb config должен быть запущен,
-          # даже если config/ уже существует
-          cd config && \
-          lb config
+          ls -la config/
+          ls -la config/bootstrap/ || exit 1
+          test -f config/bootstrap/chroot.yml || (echo "❌ config/bootstrap/chroot.yml not found" && exit 1)
 
       - name: 🛠️ Build ISO
         run: |
