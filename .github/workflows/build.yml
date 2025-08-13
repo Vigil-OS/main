@@ -30,34 +30,61 @@ jobs:
       - name: Клонировать репозиторий
         uses: actions/checkout@v4
 
-      - name: Создать .disk/metadata для валидации config
+      - name: Подготовить config с auto/ и .disk/metadata
         run: |
-          # Убедимся, что config/ существует
+          # 1. Создаём служебные директории
           mkdir -p config/.disk
+          mkdir -p auto
 
-          # Создаём файл метаданных — это сигнал для live-build, что config прошёл инициализацию
+          # 2. Создаём минимальные auto-файлы (обязательно!)
+          echo "binary" > auto/file
+          echo "lb config" > auto/config
+          echo "exit 0" > auto/hooks
+          echo "exit 0" > auto/clean
+
+          # 3. Создаём метаданные
           echo "VigilOS live-build config" > config/.disk/metadata
 
-          # Проверим структуру
-          ls -la config/
-          ls -la config/.disk/
+          # 4. Убедимся, что bootstrap существует
+          mkdir -p config/bootstrap
 
-      - name: Сборка ISO
-        run: |
-          # Не запускаем lb config — используем валидацию через .disk/metadata
-          sudo lb clean
-          sudo lb build
+          # 5. Если нет chroot.yml — создаём минимальный (на всякий случай)
+          if [ ! -f config/bootstrap/chroot.yml ]; then
+            cat > config/bootstrap/chroot.yml << 'EOF'
+---
+chroot:
+  distribution: bookworm
+  architecture: amd64
+  components:
+    - main
+    - contrib
+    - non-free
+    - non-free-firmware
+EOF
+          fi
 
-      - name: Выложить ISO как артефакт
-        uses: actions/upload-artifact@v4
-        with:
-          path: live-image-amd64.hybrid.iso
-          name: vigilos-amd64.iso
-          if: success
+          # 6. Проверка структуры
+          echo "Структура config:"
+          find config -type f | grep -v '/\.' | sort
+          echo "auto/ files:"
+          cat auto/file
+          cat auto/config
 
-      - name: Опубликовать релиз
-        if: github.event_name == 'release'
-        uses: softprops/action-gh-release@v2
-        with:
-          files: live-image-amd64.hybrid.iso
-          generate_release_notes: true
+          - name: Сборка ISO
+    run: |
+      sudo lb clean
+      sudo lb build
+
+  - name: Выложить ISO как артефакт
+    uses: actions/upload-artifact@v4
+    with:
+      path: live-image-amd64.hybrid.iso
+      name: vigilos-amd64.iso
+      if: success
+
+  - name: Опубликовать релиз
+    if: github.event_name == 'release'
+    uses: softprops/action-gh-release@v2
+    with:
+      files: live-image-amd64.hybrid.iso
+      generate_release_notes: true
