@@ -30,15 +30,16 @@ jobs:
       - name: Клонировать репозиторий
         uses: actions/checkout@v4
 
-      - name: Проверить структуру (для отладки)
+      - name: Проверить структуру
         run: |
-          echo "Содержимое репозитория:"
+          echo "Содержимое:"
           ls -la
+          echo "config/:"
+          ls -la config/
 
       - name: Сборка ISO
         run: |
-          # Уже в корне репозитория — здесь и есть config/
-          sudo lb config  # на всякий случай (если нужно)
+          # Не запускаем lb config — конфиг уже есть
           sudo lb clean
           sudo lb build
 
