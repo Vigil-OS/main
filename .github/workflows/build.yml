@@ -22,7 +22,6 @@ jobs:
             debian-archive-keyring \
             syslinux-efi \
             grub-efi-amd64 \
-            grub-pc \
             dosfstools \
             mtools \
             xorriso \
