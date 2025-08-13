@@ -27,31 +27,34 @@ jobs:
             xorriso \
             sudo
 
-      - name: Клонировать репозиторий
-        uses: actions/checkout@v4
-
-      - name: Полная инициализация config через lb config
+      - name: Клонировать репозиторий и выполнить lb config
         run: |
-          # 1. Переименуем твой config в config-tmp
-          mv config config-tmp
+          # 1. Создаём временную папку для твоих файлов
+          git clone https://github.com/Trytonottry/SecureOS.git /tmp/vigilos-custom
 
-          # 2. Запускаем lb config — создаст валидную структуру
+          # 2. Инициализируем live-build config
           lb config
 
-          # 3. Удаляем все сгенерированные файлы, чтобы вставить свои
-          rm -rf config/bootstrap config/package-lists config/hooks config/includes config/archives config/bootloaders config/binary_rootfs-persistence.conf
+          # 3. Удаляем сгенерированные файлы, которые будут заменены
+          rm -rf config/bootstrap \
+                 config/package-lists \
+                 config/hooks \
+                 config/includes \
+                 config/archives \
+                 config/bootloaders \
+                 config/binary_rootfs-persistence.conf 2>/dev/null || true
 
-          # 4. Копируем твои настройки обратно
-          mv config-tmp/bootstrap config/
-          mv config-tmp/package-lists config/
-          mv config-tmp/hooks config/
-          mv config-tmp/includes config/
-          mv config-tmp/archives config/
-          mv config-tmp/bootloaders config/
-          mv config-tmp/binary_rootfs-persistence.conf config/ 2>/dev/null || true
+          # 4. Копируем твои настройки поверх
+          cp -r /tmp/vigilos-custom/main/bootstrap config/
+          cp -r /tmp/vigilos-custom/main/package-lists config/
+          cp -r /tmp/vigilos-custom/main/hooks config/
+          cp -r /tmp/vigilos-custom/main/includes config/
+          cp -r /tmp/vigilos-custom/main/archives config/
+          cp -r /tmp/vigilos-custom/main/bootloaders config/
+          cp -r /tmp/vigilos-custom/main/binary_rootfs-persistence.conf config/ 2>/dev/null || true
 
-          # 5. Проверим результат
-          echo "Структура config:"
+          # 5. Проверка
+          echo "Конфигурация готова:"
           find config -type f | grep -v '/\.' | sort
 
       - name: Сборка ISO
